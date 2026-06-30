@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,30 +83,29 @@
 
   /* HERO */
   .hero{
-    min-height:92vh;display:flex;align-items:center;text-align:center;
+    min-height:92vh;display:flex;align-items:center;text-align:left;
     background:
       radial-gradient(ellipse 70% 60% at 50% 32%, rgba(60,55,44,0.30), transparent 70%),
       radial-gradient(ellipse 120% 90% at 50% 0%, rgba(200,162,74,0.05), transparent 60%),
       var(--ink);
     overflow:hidden;
   }
-  /* To feature the noir portrait, set a background-image on .hero-portrait below
-     (e.g. background-image:url('aura-portrait.jpg')) — the fade overlay is ready. */
   .hero-portrait{
-    position:absolute;inset:0;background-size:cover;background-position:center top;
-    opacity:0;pointer-events:none;
-    -webkit-mask-image:radial-gradient(ellipse 60% 80% at 50% 35%, #000 30%, transparent 75%);
-    mask-image:radial-gradient(ellipse 60% 80% at 50% 35%, #000 30%, transparent 75%);
+    position:absolute;inset:0;background-image:url('aura-hero.jpg');
+    background-size:cover;background-position:right center;opacity:1;pointer-events:none;
   }
-  .hero-inner{position:relative;z-index:2;width:100%}
+  .hero-veil{position:absolute;inset:0;pointer-events:none;background:
+    linear-gradient(90deg, rgba(14,14,15,0.97) 0%, rgba(14,14,15,0.82) 34%, rgba(14,14,15,0.20) 66%, rgba(14,14,15,0.42) 100%),
+    linear-gradient(0deg, rgba(14,14,15,0.82) 0%, transparent 24%, transparent 80%, rgba(14,14,15,0.6) 100%);}
+  .hero-inner{position:relative;z-index:2;width:100%;max-width:680px}
   .hero .eyebrow{margin-bottom:30px}
   .hero h1{
     font-family:var(--display);font-weight:700;font-size:clamp(64px,15vw,170px);
     line-height:0.86;letter-spacing:0.02em;text-transform:uppercase;
   }
   .hero h1 em{font-style:normal;color:var(--gold)}
-  .hero .lead{margin:32px auto 0;text-align:center;font-size:19px}
-  .hero-cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:42px}
+  .hero .lead{margin:32px 0 0;text-align:left;font-size:19px;max-width:540px}
+  .hero-cta{display:flex;gap:16px;justify-content:flex-start;flex-wrap:wrap;margin-top:42px}
   .scroll-cue{
     position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:2;
     font-family:var(--display);font-size:11px;letter-spacing:0.3em;text-transform:uppercase;
@@ -236,6 +234,19 @@
 
   a:focus-visible,.btn:focus-visible,.filter:focus-visible,.nav-cta:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  .chapters .chap:nth-child(3n+2){transition-delay:.08s}
+  .chapters .chap:nth-child(3n){transition-delay:.16s}
+  .visual-grid .vcard:nth-child(3n+2){transition-delay:.08s}
+  .visual-grid .vcard:nth-child(3n){transition-delay:.16s}
+  .stats .stat:nth-child(2){transition-delay:.07s}
+  .stats .stat:nth-child(3){transition-delay:.14s}
+  .stats .stat:nth-child(4){transition-delay:.21s}
+  .sticky-cta{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(18px);opacity:0;pointer-events:none;font-family:var(--display);font-weight:500;font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:13px 28px;border-radius:2px;z-index:60;box-shadow:0 12px 34px rgba(0,0,0,0.45);transition:opacity .3s ease,transform .3s ease,background .2s}
+  .sticky-cta.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+  .sticky-cta:hover{background:var(--gold-bright)}
+
   @media (max-width:900px){
     .guide-grid{grid-template-columns:1fr;gap:40px}
     .price-card{position:static}
@@ -252,6 +263,13 @@
     .chapters,.visual-grid,.products,.stats-grid{grid-template-columns:1fr}
     .stat{border-right:0}
     .nav-cta{display:none}
+    .hero{text-align:center}
+    .hero-inner{max-width:none}
+    .hero .lead{margin:32px auto 0;text-align:center;max-width:none}
+    .hero-cta{justify-content:center}
+    .hero-portrait{background-position:center top;opacity:0.42}
+    .hero-veil{background:linear-gradient(0deg, rgba(14,14,15,0.94) 16%, rgba(14,14,15,0.62))}
+    .sticky-cta{bottom:16px;font-size:12px;padding:12px 22px}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;scroll-behavior:auto!important;transition:none!important}
@@ -277,6 +295,7 @@
 
 <section class="hero">
   <div class="hero-portrait" id="heroPortrait"></div>
+  <div class="hero-veil"></div>
   <div class="wrap hero-inner">
     <span class="eyebrow">Aura Dynamics · Men's Aesthetics &amp; Self-Optimization</span>
     <h1>Level <em>Up.</em></h1>
@@ -484,6 +503,8 @@
   </div>
 </footer>
 
+<a class="sticky-cta" id="stickyCta" href="https://auradynamiq.gumroad.com/l/mensaesthetics">Get the Guide</a>
+
 <script>
   var menuToggle=document.getElementById('menuToggle');
   var navLinks=document.getElementById('navLinks');
@@ -502,6 +523,24 @@
       });
     });
   });
+
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce && 'IntersectionObserver' in window){
+    var sels='.philosophy .quote,.philosophy .lead,.stats .stat,.cover,.guide-grid > div:first-child,.chap,.vcard,.visual .lead,.sourcing,.lm-quote,.lm-list li,.final h2,.final .lead';
+    var els=document.querySelectorAll(sels);
+    els.forEach(function(el){el.classList.add('reveal');});
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+    },{threshold:0.12,rootMargin:'0px 0px -7% 0px'});
+    els.forEach(function(el){io.observe(el);});
+  }
+
+  var stickyCta=document.getElementById('stickyCta');
+  function onScroll(){
+    if(window.scrollY>window.innerHeight*0.85){stickyCta.classList.add('show');}
+    else{stickyCta.classList.remove('show');}
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
 </script>
 </body>
 </html>
